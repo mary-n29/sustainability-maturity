@@ -223,8 +223,8 @@ The pipeline detects language patterns for each strategy level:
 ```python
 import pandas as pd
 
-# Load chunks
-chunks = pd.read_csv('cleaned_chunks.csv')
+# Load chunks from outputs folder
+chunks = pd.read_csv('outputs/cleaned_chunks.csv')
 
 # Classify companies by dominant maturity level
 company_maturity = chunks.groupby('company')['maturity_level'].agg(
@@ -237,6 +237,9 @@ print(company_maturity.sort_values(ascending=False))
 ### Example 2: Multi-Level Analysis
 
 ```python
+# Load chunks
+chunks = pd.read_csv('outputs/cleaned_chunks.csv')
+
 # Aggregate maturity scores by company
 maturity_profile = chunks.groupby('company').agg({
     'regulatory_score': 'sum',
@@ -258,6 +261,9 @@ print(maturity_profile)
 ### Example 3: Filter High-Quality Sustainability Content
 
 ```python
+# Load data
+chunks = pd.read_csv('outputs/cleaned_chunks.csv')
+
 # Get chunks with strong sustainability signals
 high_quality = chunks[
     (chunks['sustainability_score'] > 5) &  # Multiple keywords
@@ -271,6 +277,9 @@ print(f"Found {len(high_quality)} high-quality chunks")
 ### Example 4: Dimension-Specific Maturity
 
 ```python
+# Load data
+chunks = pd.read_csv('outputs/cleaned_chunks.csv')
+
 # Environmental maturity
 env_chunks = chunks[chunks['hsbs_dimensions'].str.contains('environmental')]
 env_maturity = env_chunks.groupby('company')['maturity_level'].mean()
@@ -289,6 +298,9 @@ print(comparison)
 ### Example 5: Industry Benchmarking
 
 ```python
+# Load data
+chunks = pd.read_csv('outputs/cleaned_chunks.csv')
+
 # Add industry classification to metadata
 chunks['industry'] = chunks['company'].map({
     'Apple': 'Technology',
@@ -324,7 +336,7 @@ Handles PDF file operations
 - `read_pdf_text(path, password)` - Extract text (supports encryption)
 - `ensure_pdf_extension(filename)` - Normalize filenames
 
-### `MaturityLevelDetector`
+### `MaturityLevelDetector` ⭐ NEW
 Detects sustainability maturity using Gabler et al. hierarchy
 - `detect_maturity_level(text)` - Classify text by strategy level
 - Returns scores for all four levels plus dominant level
@@ -456,7 +468,8 @@ GitHub repository: https://github.com/yourusername/repo-name
 
 ## 👥 Authors
 
-
+- Your Name - [Your GitHub](https://github.com/yourusername)
+- Team Members - (add your team here)
 
 ## 🙏 Acknowledgments
 
@@ -469,3 +482,6 @@ GitHub repository: https://github.com/yourusername/repo-name
 
 Questions or support? Open an issue on GitHub or contact [your-email@example.com]
 
+---
+
+**⭐ Star this repository if you find it helpful for your sustainability research!**
