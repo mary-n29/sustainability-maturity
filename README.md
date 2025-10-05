@@ -1,36 +1,69 @@
-# PDF Text Processing Pipeline
+# Sustainability Maturity Analysis Pipeline
 
-A robust Python pipeline for extracting, cleaning, and chunking text from PDF documents. Perfect for preparing documents for NLP tasks, embeddings, RAG systems, or text analysis.
+A specialized Python pipeline for extracting, cleaning, and analyzing sustainability reports to classify corporate sustainability maturity using the **Gabler et al. (2023) Hierarchy of Sustainability Strategies**. Perfect for research on corporate sustainability, ESG analysis, and sustainability maturity assessment.
 
 ## 🌟 Features
 
-- **Automated PDF Processing** - Batch process multiple PDFs with metadata tracking
-- **Smart Text Cleaning** - Remove URLs, emails, dates, phone numbers, and other noise
-- **Password Support** - Handle encrypted/password-protected PDFs automatically
-- **Sentence-Based Chunking** - Split documents into meaningful chunks using spaCy
-- **Multiple Output Formats** - Export to CSV, Excel, and manifest files
-- **Self-Healing Dependencies** - Automatically installs required packages
-- **Team-Friendly Code** - Well-documented classes for easy collaboration
+- **Maturity Classification** - Automatically classifies text by sustainability strategy level (Regulatory → Cost Reduction → Value Proposition → Identification)
+- **Smart Text Preservation** - Keeps metrics, years, targets, and commitments critical for maturity analysis
+- **Multi-Dimensional Analysis** - Tags content by ESG dimensions (environmental, social, governance, economic)
+- **Sentence-Based Chunking** - Creates contextual chunks with overlap for better analysis
+- **Password-Protected PDFs** - Handles encrypted documents automatically
+- **Multiple Export Formats** - Outputs to CSV, Excel, and manifest files
+- **Self-Healing Dependencies** - Auto-installs required packages
+- **Team-Friendly Code** - Well-documented classes for collaboration
 
 ## 📋 Table of Contents
 
+- [Research Framework](#research-framework)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Input Format](#input-format)
 - [Output Files](#output-files)
+- [Maturity Classification](#maturity-classification)
 - [Usage Examples](#usage-examples)
 - [Class Documentation](#class-documentation)
 - [Requirements](#requirements)
 - [Troubleshooting](#troubleshooting)
+
+## 📚 Research Framework
+
+This pipeline implements the **Hierarchy of Sustainability Strategies** from:
+
+> Gabler, C.B., Landers, V.M., & Itani, O.S. (2023). Sustainability and professional sales: a review and future research agenda. *Journal of Personal Selling & Sales Management*.
+
+### The Four-Level Hierarchy
+
+```
+┌─────────────────────────────────────────┐
+│  Level 4: IDENTIFICATION STRATEGY       │
+│  Core identity aligned with             │
+│  sustainability (e.g., Patagonia)       │
+├─────────────────────────────────────────┤
+│  Level 3: VALUE PROPOSITION STRATEGY    │
+│  Sustainability as customer value       │
+│  (e.g., Nestle CSV)                     │
+├─────────────────────────────────────────┤
+│  Level 2: COST REDUCTION STRATEGY       │
+│  Efficiency & long-term investment      │
+│  (e.g., Nike, Google green energy)      │
+├─────────────────────────────────────────┤
+│  Level 1: REGULATORY STRATEGY           │
+│  Compliance-driven to avoid penalties   │
+│  (e.g., Unilever Sustainable Living)    │
+└─────────────────────────────────────────┘
+```
+
+The pipeline automatically detects language patterns indicating each strategy level to classify corporate sustainability maturity.
 
 ## 🚀 Installation
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/pdf-text-processor.git
-cd pdf-text-processor
+git clone https://github.com/yourusername/sustainability-maturity-pipeline.git
+cd sustainability-maturity-pipeline
 ```
 
 ### 2. Install Required Packages
@@ -55,167 +88,223 @@ Create a file named `company_metadata.csv`:
 
 ```csv
 Company,year,doc_type,file_name
-Apple,2023,Annual Report,apple_2023_report.pdf
-Microsoft,2023,Annual Report,msft_2023_report.pdf
-Google,2022,10-K,google_10k_2022.pdf
+Apple,2025,Environmental Report,Apple_Environmental_Progress_Report_2025.pdf
+Nike,2024,Sustainability Data,Nike_Sustainability-Data.pdf
+Patagonia,2024,B Corp Report,Patagonia_2023-2024-BCorp-Report.pdf
 ```
 
 ### Step 2: Configure the Script
 
-Open `TextCleaning_and_Chunking_Refactored.py` and edit the configuration section:
+Open the script and edit the configuration section:
 
 ```python
 # CONFIGURATION SECTION
 METADATA_CSV = "company_metadata.csv"
-PDF_ROOT_FOLDER = "."  # or "data/pdfs" if PDFs are in a subfolder
-CHUNK_SIZE = 3
-MIN_WORDS = 10
+PDF_ROOT_FOLDER = "."
+CHUNK_SIZE = 5  # Larger chunks for better context
+OVERLAP_SENTENCES = 1  # Overlap for continuity
+MIN_WORDS = 20  # Filter small chunks
+PRESERVE_METRICS = True  # Keep numbers, years, targets
 ```
 
 ### Step 3: Run the Script
 
-**In your IDE:** Simply press Run (F5) or click the Run button
+**In your IDE:** Press Run (F5) or click the Run button
 
 **Or from terminal:**
 ```bash
-python TextCleaning_and_Chunking_Refactored.py
+python TextCleaning_and_Chunking_Sustainability.py
 ```
 
-### Step 4: Check Your Outputs
+### Step 4: Analyze Your Results
 
-The script creates several output files:
-- `cleaned_documents.csv` - Full document text with metadata
-- `cleaned_chunks.csv` - Sentence-based chunks
-- `cleaned_documents.xlsx` - Excel version of documents
-- `cleaned_chunks.xlsx` - Excel version of chunks
-- `cleaned_documents_manifest.csv` - Metadata only (no full text)
+Check the output files for:
+- Maturity level classifications
+- ESG dimension tagging
+- Sustainability metrics
+- Full text and chunks
 
 ## ⚙️ Configuration
 
-Edit these variables at the top of the script:
-
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `METADATA_CSV` | `"company_metadata.csv"` | Path to your metadata CSV file |
-| `PDF_ROOT_FOLDER` | `"."` | Directory containing PDF files |
-| `OUTPUT_DOCS_CSV` | `"cleaned_documents.csv"` | Output path for cleaned documents |
-| `OUTPUT_CHUNKS_CSV` | `"cleaned_chunks.csv"` | Output path for text chunks |
-| `CHUNK_SIZE` | `3` | Number of sentences per chunk |
-| `MIN_WORDS` | `10` | Minimum words per chunk (filters out small chunks) |
-| `MAX_CHARS` | `100000` | Max characters to process at once (prevents memory issues) |
+| `METADATA_CSV` | `"company_metadata.csv"` | Path to metadata file |
+| `PDF_ROOT_FOLDER` | `"."` | Directory with PDFs |
+| `OUTPUT_DOCS_CSV` | `"cleaned_documents.csv"` | Document output path |
+| `OUTPUT_CHUNKS_CSV` | `"cleaned_chunks.csv"` | Chunks output path |
+| `CHUNK_SIZE` | `5` | Sentences per chunk (5-7 recommended for sustainability) |
+| `MIN_WORDS` | `20` | Minimum words per chunk |
+| `MAX_CHARS` | `100000` | Max chars to process at once |
 | `SPACY_MODEL` | `"en_core_web_sm"` | spaCy model for sentence detection |
-| `LOWERCASE` | `True` | Convert text to lowercase during cleaning |
+| `LOWERCASE` | `True` | Convert text to lowercase |
+| `PRESERVE_METRICS` | `True` | Keep numbers, percentages, years |
+| `PRESERVE_SECTION_HEADERS` | `True` | Identify section headers |
+| `OVERLAP_SENTENCES` | `1` | Sentences overlap between chunks |
 
 ## 📄 Input Format
 
 ### Metadata CSV Structure
 
-Your metadata CSV should have these columns:
-
 | Column | Required | Description | Example |
 |--------|----------|-------------|---------|
-| `Company` | Yes | Company/organization name | `"Apple"` |
-| `year` | Yes | Year of the document | `2023` |
-| `doc_type` | Yes | Type of document | `"Annual Report"`, `"10-K"` |
-| `file_name` | Yes | PDF filename (with or without .pdf extension) | `"apple_2023.pdf"` |
+| `Company` | Yes | Organization name | `"Tesla"` |
+| `year` | Yes | Report year | `2024` |
+| `doc_type` | Yes | Document type | `"Impact Report"` |
+| `file_name` | Yes | PDF filename | `"tesla_2024.pdf"` |
 | `pdf_password` | No | Password for encrypted PDFs | `"secret123"` |
-
-**Example:**
-```csv
-Company,year,doc_type,file_name,pdf_password
-Tesla,2023,Annual Report,tesla_annual_2023.pdf,
-SpaceX,2022,Financial Report,spacex_financials.pdf,confidential123
-```
 
 ## 📦 Output Files
 
-### 1. `cleaned_documents.csv`
-Full document-level data with cleaned text:
-- `company` - Company name
-- `year` - Document year
-- `doc_type` - Document type
-- `file_name` - PDF filename
-- `clean_text` - Cleaned full text
-- `word_count_doc` - Total words in document
-- `char_count_doc` - Total characters in document
+### 1. `cleaned_chunks.csv` - **Primary Analysis File**
+Enhanced chunks with maturity classification:
 
-### 2. `cleaned_chunks.csv`
-Sentence-based chunks for NLP processing:
-- `document_id` - ID linking back to parent document
-- `chunk_id` - Sequential chunk number within document
-- `text_chunk` - Chunked text (N sentences)
-- `word_count` - Words in this chunk
-- `char_count` - Characters in this chunk
-- All metadata columns from parent document
+**Standard Columns:**
+- `company`, `year`, `doc_type`, `file_name`, `chunk_id`
+- `text_chunk` - Chunked text
+- `word_count`, `char_count` - Text statistics
+
+**Sustainability Features:**
+- `hsbs_dimensions` - ESG dimensions (e.g., "environmental,social")
+- `has_metrics` - Contains quantitative data (True/False)
+- `has_years` - Contains year references (True/False)
+- `sustainability_score` - Count of sustainability keywords
+- `top_keywords` - Top 5 sustainability terms found
+
+**Maturity Classification (NEW):**
+- `maturity_level` - Numeric level (0-4)
+- `maturity_label` - Text label ("regulatory", "cost_reduction", etc.)
+- `regulatory_score` - Count of regulatory indicators
+- `cost_reduction_score` - Count of cost reduction indicators
+- `value_prop_score` - Count of value proposition indicators
+- `identification_score` - Count of identification indicators
+
+### 2. `cleaned_documents.csv`
+Full document-level data with cleaned text and statistics
 
 ### 3. `cleaned_documents.xlsx` & `cleaned_chunks.xlsx`
-Excel versions of the above for easy viewing
+Excel versions for easy viewing in spreadsheet software
 
 ### 4. `cleaned_documents_manifest.csv`
 Metadata only (no full text) for quick reference
 
+## 🎯 Maturity Classification
+
+### How It Works
+
+The pipeline detects language patterns for each strategy level:
+
+**Level 1 - Regulatory Strategy**
+- Keywords: comply, compliance, regulation, mandate, penalty, minimum, legal
+- Example: "We comply with environmental regulations to avoid sanctions"
+
+**Level 2 - Cost Reduction Strategy**
+- Keywords: efficiency, optimize, cost saving, ROI, investment, reduce waste
+- Example: "Our energy efficiency initiatives reduced operational costs by 15%"
+
+**Level 3 - Value Proposition Strategy**
+- Keywords: customer value, competitive advantage, differentiation, brand, market
+- Example: "Customers choose us for our commitment to sustainable packaging"
+
+**Level 4 - Identification Strategy**
+- Keywords: core identity, mission, purpose, leadership, transformation, who we are
+- Example: "Sustainability is fundamental to who we are as an organization"
+
+### Classification Methodology
+
+1. Each chunk is scored across all four levels
+2. The level with the highest score becomes the `dominant_level`
+3. Individual scores allow for multi-level analysis
+4. Companies can be classified by aggregating chunk-level data
+
 ## 💡 Usage Examples
 
-### Example 1: Basic Usage
+### Example 1: Basic Company Classification
 
 ```python
-# Edit configuration section
-METADATA_CSV = "my_documents.csv"
-PDF_ROOT_FOLDER = "data/pdfs"
+import pandas as pd
 
-# Run the script - that's it!
-```
+# Load chunks
+chunks = pd.read_csv('cleaned_chunks.csv')
 
-### Example 2: Large Chunks for Summarization
-
-```python
-CHUNK_SIZE = 10  # 10 sentences per chunk (larger chunks)
-MIN_WORDS = 50   # Only keep substantial chunks
-```
-
-### Example 3: Processing Documents in Different Folder
-
-```python
-METADATA_CSV = "metadata/docs_list.csv"
-PDF_ROOT_FOLDER = "raw_pdfs/company_reports"
-OUTPUT_DOCS_CSV = "output/processed_docs.csv"
-OUTPUT_CHUNKS_CSV = "output/processed_chunks.csv"
-```
-
-### Example 4: Programmatic Usage
-
-You can also use the classes directly in your own scripts:
-
-```python
-from TextCleaning_and_Chunking_Refactored import PDFPipeline
-
-# Create pipeline
-pipeline = PDFPipeline(
-    metadata_csv="data.csv",
-    pdf_root="pdfs/",
-    chunk_size=5,
-    min_words=20
+# Classify companies by dominant maturity level
+company_maturity = chunks.groupby('company')['maturity_level'].agg(
+    lambda x: x.mode()[0] if not x.mode().empty else 0
 )
 
-# Run pipeline
-pipeline.run(
-    output_docs_csv="results/documents.csv",
-    output_chunks_csv="results/chunks.csv"
-)
+print(company_maturity.sort_values(ascending=False))
 ```
 
-### Example 5: Using Individual Classes
+### Example 2: Multi-Level Analysis
 
 ```python
-from TextCleaning_and_Chunking_Refactored import TextCleaner, PDFProcessor
+# Aggregate maturity scores by company
+maturity_profile = chunks.groupby('company').agg({
+    'regulatory_score': 'sum',
+    'cost_reduction_score': 'sum',
+    'value_prop_score': 'sum',
+    'identification_score': 'sum'
+})
 
-# Clean some text
-cleaner = TextCleaner(lowercase=True)
-clean_text = cleaner.clean("Visit www.example.com on 2023-01-15")
-print(clean_text)  # Output: "visit on"
+# Calculate percentages
+maturity_profile['total'] = maturity_profile.sum(axis=1)
+for col in ['regulatory', 'cost_reduction', 'value_prop', 'identification']:
+    maturity_profile[f'{col}_pct'] = (
+        maturity_profile[f'{col}_score'] / maturity_profile['total'] * 100
+    )
 
-# Read a PDF
-pdf_text = PDFProcessor.read_pdf_text("document.pdf")
+print(maturity_profile)
+```
+
+### Example 3: Filter High-Quality Sustainability Content
+
+```python
+# Get chunks with strong sustainability signals
+high_quality = chunks[
+    (chunks['sustainability_score'] > 5) &  # Multiple keywords
+    (chunks['has_metrics'] == True) &  # Quantitative data
+    (chunks['maturity_level'] >= 3)  # Value prop or higher
+]
+
+print(f"Found {len(high_quality)} high-quality chunks")
+```
+
+### Example 4: Dimension-Specific Maturity
+
+```python
+# Environmental maturity
+env_chunks = chunks[chunks['hsbs_dimensions'].str.contains('environmental')]
+env_maturity = env_chunks.groupby('company')['maturity_level'].mean()
+
+# Social maturity
+social_chunks = chunks[chunks['hsbs_dimensions'].str.contains('social')]
+social_maturity = social_chunks.groupby('company')['maturity_level'].mean()
+
+comparison = pd.DataFrame({
+    'environmental': env_maturity,
+    'social': social_maturity
+})
+print(comparison)
+```
+
+### Example 5: Industry Benchmarking
+
+```python
+# Add industry classification to metadata
+chunks['industry'] = chunks['company'].map({
+    'Apple': 'Technology',
+    'Nike': 'Apparel',
+    'Tesla': 'Automotive',
+    # ... add your companies
+})
+
+# Compare industry maturity
+industry_maturity = chunks.groupby('industry').agg({
+    'maturity_level': 'mean',
+    'sustainability_score': 'mean',
+    'has_metrics': lambda x: (x == True).sum() / len(x) * 100
+})
+
+print(industry_maturity.round(2))
 ```
 
 ## 📚 Class Documentation
@@ -225,28 +314,38 @@ Handles automatic installation of required packages
 - `ensure_spacy_model(model_name)` - Download/load spaCy model
 - `ensure_cryptography()` - Install cryptography for encrypted PDFs
 
-### `TextCleaner`
-Cleans and normalizes text data
-- `clean(text)` - Remove URLs, emails, dates, phone numbers, normalize whitespace
+### `SustainabilityTextCleaner`
+Cleans text while preserving sustainability-relevant information
+- `clean(text)` - Remove noise, keep metrics/years/targets
+- `identify_sustainability_content(text)` - Detect sustainability features
 
 ### `PDFProcessor`
 Handles PDF file operations
-- `read_pdf_text(path, password)` - Extract text from PDF (supports encryption)
+- `read_pdf_text(path, password)` - Extract text (supports encryption)
 - `ensure_pdf_extension(filename)` - Normalize filenames
+
+### `MaturityLevelDetector`
+Detects sustainability maturity using Gabler et al. hierarchy
+- `detect_maturity_level(text)` - Classify text by strategy level
+- Returns scores for all four levels plus dominant level
+
+### `SectionDetector`
+Identifies ESG dimensions in text
+- `detect_section_type(text)` - Tag by environmental/social/governance/economic
 
 ### `DataFrameUtils`
 Utility functions for data operations
-- `save_to_csv(df, path)` - Save with Excel-compatible formatting
-- `save_to_excel(df, path)` - Export to Excel workbook
+- `save_to_csv(df, path)` - Save with Excel compatibility
+- `save_to_excel(df, path)` - Export to Excel
 - `compute_text_statistics(df)` - Add word/character counts
 
-### `TextChunker`
-Creates sentence-based chunks from documents
-- `create_chunks(df, text_column)` - Split documents into chunks using spaCy
+### `SustainabilityChunker`
+Creates contextually-aware chunks
+- `create_chunks(df, text_column)` - Split with overlap and metadata
 
-### `PDFPipeline`
-Main orchestrator that coordinates all operations
-- `run(output_docs_csv, output_chunks_csv)` - Execute complete pipeline
+### `SustainabilityPipeline`
+Main orchestrator coordinating all operations
+- `run(output_docs_csv, output_chunks_csv)` - Execute pipeline
 
 ## 📦 Requirements
 
@@ -266,57 +365,107 @@ python -m spacy download en_core_web_sm
 ## 🔧 Troubleshooting
 
 ### "Metadata file not found"
-- Check that `company_metadata.csv` exists in the same directory as the script
-- Or update `METADATA_CSV` to point to the correct path
+- Verify `company_metadata.csv` exists in the script directory
+- Update `METADATA_CSV` configuration to the correct path
 
 ### "Missing file: [filename]"
-- Verify PDF files are in the `PDF_ROOT_FOLDER` directory
-- Check that filenames in metadata CSV match actual file names
-- File names are case-sensitive on Linux/Mac
+- Check PDFs are in `PDF_ROOT_FOLDER` directory
+- Verify filenames in CSV match actual files (case-sensitive on Linux/Mac)
 
 ### "PDF is encrypted and a password is required"
-- Add a `pdf_password` column to your metadata CSV
-- Enter the password for that specific PDF
+- Add `pdf_password` column to metadata CSV
+- Enter password for that specific PDF
+
+### Low maturity scores across all documents
+- Check if reports are truly sustainability-focused
+- Adjust `MIN_WORDS` if chunks are too small
+- Verify PDFs contain extractable text (not scanned images)
 
 ### Memory issues with large PDFs
-- Increase `MAX_CHARS` if chunks are cut off mid-sentence
-- Decrease `MAX_CHARS` if you're running out of memory
-- Consider processing fewer files at once
+- Increase `MAX_CHARS` if chunks cut off mid-sentence
+- Decrease `MAX_CHARS` if running out of memory
+- Process fewer files at once
 
-### Empty chunks output
-- Check that `MIN_WORDS` isn't set too high
-- Verify PDFs contain extractable text (not scanned images)
-- Some PDFs may have encoding issues - try opening them manually first
+### Unexpected maturity classifications
+- Review the maturity indicator patterns in `MaturityLevelDetector`
+- Check if company uses non-standard terminology
+- Consider that companies may have mixed strategies
+
+## 📊 Output Summary Example
+
+When you run the pipeline, you'll see:
+
+```
+============================================================
+SUSTAINABILITY PDF TEXT PROCESSING PIPELINE
+Optimized for Maturity Analysis (Gabler et al. 2023)
+============================================================
+[INFO] Initializing sustainability-focused pipeline...
+[INFO] Successfully processed 23 documents
+
+[SUMMARY] Created 2,847 chunks from 23 documents
+[SUMMARY] Average sustainability keywords per chunk: 4.3
+
+[SUMMARY] HSBS dimension distribution:
+  - Environmental: 1,892 chunks (66.5%)
+  - Social: 1,245 chunks (43.7%)
+  - Governance: 678 chunks (23.8%)
+  - Economic: 534 chunks (18.8%)
+
+[SUMMARY] Maturity Level Distribution (Gabler et al. Hierarchy):
+  - Level Identification: 342 chunks (12.0%)
+  - Level Value Proposition: 934 chunks (32.8%)
+  - Level Cost Reduction: 1,016 chunks (35.7%)
+  - Level Regulatory: 487 chunks (17.1%)
+  - Level None Identified: 68 chunks (2.4%)
+
+[DONE] Sustainability processing complete!
+============================================================
+```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes:
+Contributions welcome! For major changes:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch (`git checkout -b feature/NewFeature`)
+3. Commit changes (`git commit -m 'Add maturity indicators'`)
+4. Push to branch (`git push origin feature/NewFeature`)
 5. Open a Pull Request
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see LICENSE file for details.
+
+## 📖 Citation
+
+If you use this pipeline in your research, please cite:
+
+**The Framework:**
+```
+Gabler, C.B., Landers, V.M., & Itani, O.S. (2023). Sustainability and 
+professional sales: a review and future research agenda. Journal of 
+Personal Selling & Sales Management.
+```
+
+**This Tool:**
+```
+[Your Name]. (2025). Sustainability Maturity Analysis Pipeline. 
+GitHub repository: https://github.com/yourusername/repo-name
+```
 
 ## 👥 Authors
 
-- Your Name - [Your GitHub](https://github.com/yourusername)
-- Team Members - (add your team members here)
+
 
 ## 🙏 Acknowledgments
 
-- Built with [spaCy](https://spacy.io/) for NLP processing
-- PDF extraction powered by [pypdf](https://github.com/py-pdf/pypdf)
-- Inspired by the need for clean, structured text data for NLP applications
+- Framework based on Gabler, Landers, & Itani (2023)
+- Built with [spaCy](https://spacy.io/) for NLP
+- PDF extraction via [pypdf](https://github.com/py-pdf/pypdf)
+- Designed for sustainability research and ESG analysis
 
 ## 📮 Contact
 
-For questions or support, please open an issue on GitHub or contact [your-email@example.com]
+Questions or support? Open an issue on GitHub or contact [your-email@example.com]
 
----
-
-**Star ⭐ this repository if you find it helpful!**
